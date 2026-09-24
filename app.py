@@ -412,40 +412,85 @@ def init_db():
         db.create_all()
 
         if not User.query.filter_by(role='admin').first():
-            admin = User(username='admin', full_name='System Administrator',
-                         email='admin@library.local', role='admin')
+            admin = User(
+                username='admin',
+                full_name='System Administrator',
+                email='admin@library.local',
+                role='admin'
+            )
             admin.set_password('admin123')
             db.session.add(admin)
 
         if not User.query.filter_by(username='librarian1').first():
-            librarian = User(username='librarian1', full_name='Jane Librarian',
-                              email='librarian@library.local', role='librarian')
+            librarian = User(
+                username='librarian1',
+                full_name='Jane Librarian',
+                email='librarian@library.local',
+                role='librarian'
+            )
             librarian.set_password('librarian123')
             db.session.add(librarian)
 
         if not User.query.filter_by(username='student1').first():
-            student = User(username='student1', full_name='Alex Student',
-                            email='student@library.local', role='student')
+            student = User(
+                username='student1',
+                full_name='Alex Student',
+                email='student@library.local',
+                role='student'
+            )
             student.set_password('student123')
             db.session.add(student)
 
         if Book.query.count() == 0:
             sample_books = [
-                Book(title='The Pragmatic Programmer', author='David Thomas', isbn='9780135957059',
-                     category='Technology', quantity=3),
-                Book(title='Clean Code', author='Robert C. Martin', isbn='9780132350884',
-                     category='Technology', quantity=2),
-                Book(title='To Kill a Mockingbird', author='Harper Lee', isbn='9780061120084',
-                     category='Fiction', quantity=4),
-                Book(title='A Brief History of Time', author='Stephen Hawking', isbn='9780553380163',
-                     category='Science', quantity=2),
-                Book(title='Sapiens', author='Yuval Noah Harari', isbn='9780062316097',
-                     category='History', quantity=3),
+                Book(
+                    title='The Pragmatic Programmer',
+                    author='David Thomas',
+                    isbn='9780135957059',
+                    category='Technology',
+                    quantity=3
+                ),
+                Book(
+                    title='Clean Code',
+                    author='Robert C. Martin',
+                    isbn='9780132350884',
+                    category='Technology',
+                    quantity=2
+                ),
+                Book(
+                    title='To Kill a Mockingbird',
+                    author='Harper Lee',
+                    isbn='9780061120084',
+                    category='Fiction',
+                    quantity=4
+                ),
+                Book(
+                    title='A Brief History of Time',
+                    author='Stephen Hawking',
+                    isbn='9780553380163',
+                    category='Science',
+                    quantity=2
+                ),
+                Book(
+                    title='Sapiens',
+                    author='Yuval Noah Harari',
+                    isbn='9780062316097',
+                    category='History',
+                    quantity=3
+                )
             ]
+
             db.session.bulk_save_objects(sample_books)
 
         db.session.commit()
 
-init_db()
+
+# Initialize database when deployed
+try:
+    init_db()
+except Exception as e:
+    print("Database initialization error:", e)
+
+
 if __name__ == '__main__':
     app.run(debug=True)
