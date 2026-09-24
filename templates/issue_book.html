@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+{% block title %}Issue Book{% endblock %}
+{% block content %}
+<h1 class="page-title">Issue a Book</h1>
+
+<div class="form-card">
+    {% if books and students %}
+    <form method="POST" action="{{ url_for('issue_book') }}">
+        <div class="form-group">
+            <label for="book_id">Book *</label>
+            <select id="book_id" name="book_id" required>
+                <option value="" disabled selected>Select a book</option>
+                {% for b in books %}
+                <option value="{{ b.id }}">{{ b.title }} — {{ b.author }} ({{ b.available_copies }} available)</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="student_id">Student *</label>
+            <select id="student_id" name="student_id" required>
+                <option value="" disabled selected>Select a student</option>
+                {% for s in students %}
+                <option value="{{ s.id }}">{{ s.full_name }} ({{ s.username }})</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="days">Loan Period (days)</label>
+            <input type="number" id="days" name="days" value="{{ default_days }}" min="1">
+        </div>
+
+        <div class="form-actions">
+            <button type="submit" class="btn btn-primary">Issue Book</button>
+            <a href="{{ url_for('dashboard') }}" class="btn btn-outline">Cancel</a>
+        </div>
+    </form>
+    {% elif not books %}
+        <p class="empty-state">No copies are currently available to issue. Add books or wait for returns.</p>
+    {% else %}
+        <p class="empty-state">No student accounts exist yet. Add a student first.</p>
+    {% endif %}
+</div>
+{% endblock %}

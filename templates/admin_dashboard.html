@@ -1,0 +1,78 @@
+{% extends 'base.html' %}
+{% block title %}Admin Dashboard{% endblock %}
+{% block content %}
+<h1 class="page-title">Admin Dashboard</h1>
+<p class="page-subtitle">System-wide overview</p>
+
+<div class="stats-grid">
+    <div class="stat-card">
+        <span class="stat-value">{{ stats.total_books }}</span>
+        <span class="stat-label">Book Titles</span>
+    </div>
+    <div class="stat-card">
+        <span class="stat-value">{{ stats.total_copies }}</span>
+        <span class="stat-label">Total Copies</span>
+    </div>
+    <div class="stat-card">
+        <span class="stat-value">{{ stats.books_issued }}</span>
+        <span class="stat-label">Currently Issued</span>
+    </div>
+    <div class="stat-card {% if stats.overdue > 0 %}stat-card-warning{% endif %}">
+        <span class="stat-value">{{ stats.overdue }}</span>
+        <span class="stat-label">Overdue</span>
+    </div>
+    <div class="stat-card">
+        <span class="stat-value">{{ stats.total_librarians }}</span>
+        <span class="stat-label">Librarians</span>
+    </div>
+    <div class="stat-card">
+        <span class="stat-value">{{ stats.total_students }}</span>
+        <span class="stat-label">Students</span>
+    </div>
+</div>
+
+<div class="quick-links">
+    <a href="{{ url_for('add_book') }}" class="btn btn-primary">+ Add Book</a>
+    <a href="{{ url_for('librarians') }}" class="btn btn-secondary">Manage Librarians</a>
+    <a href="{{ url_for('students') }}" class="btn btn-secondary">Manage Students</a>
+    <a href="{{ url_for('issue_book') }}" class="btn btn-secondary">Issue a Book</a>
+</div>
+
+<section class="panel">
+    <h2>Recent Issue Activity</h2>
+    {% if recent_issues %}
+    <table class="data-table">
+        <thead>
+            <tr>
+                <th>Book</th>
+                <th>Student</th>
+                <th>Issued</th>
+                <th>Due</th>
+                <th>Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for r in recent_issues %}
+            <tr>
+                <td>{{ r.book.title }}</td>
+                <td>{{ r.student.full_name }}</td>
+                <td>{{ r.issue_date }}</td>
+                <td>{{ r.due_date }}</td>
+                <td>
+                    {% if r.status == 'returned' %}
+                        <span class="badge badge-success">Returned</span>
+                    {% elif r.is_overdue %}
+                        <span class="badge badge-danger">Overdue</span>
+                    {% else %}
+                        <span class="badge badge-info">Issued</span>
+                    {% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <p class="empty-state">No issue activity yet.</p>
+    {% endif %}
+</section>
+{% endblock %}

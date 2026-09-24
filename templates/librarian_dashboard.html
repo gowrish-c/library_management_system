@@ -1,0 +1,73 @@
+{% extends 'base.html' %}
+{% block title %}Librarian Dashboard{% endblock %}
+{% block content %}
+<h1 class="page-title">Librarian Dashboard</h1>
+<p class="page-subtitle">Welcome back, {{ current_user.full_name }}</p>
+
+<div class="stats-grid">
+    <div class="stat-card">
+        <span class="stat-value">{{ stats.total_books }}</span>
+        <span class="stat-label">Book Titles</span>
+    </div>
+    <div class="stat-card">
+        <span class="stat-value">{{ stats.books_issued }}</span>
+        <span class="stat-label">Currently Issued</span>
+    </div>
+    <div class="stat-card {% if stats.overdue > 0 %}stat-card-warning{% endif %}">
+        <span class="stat-value">{{ stats.overdue }}</span>
+        <span class="stat-label">Overdue</span>
+    </div>
+    <div class="stat-card">
+        <span class="stat-value">{{ stats.total_students }}</span>
+        <span class="stat-label">Students</span>
+    </div>
+</div>
+
+<div class="quick-links">
+    <a href="{{ url_for('issue_book') }}" class="btn btn-primary">+ Issue a Book</a>
+    <a href="{{ url_for('add_book') }}" class="btn btn-secondary">+ Add Book</a>
+    <a href="{{ url_for('books') }}" class="btn btn-secondary">View Catalog</a>
+</div>
+
+<section class="panel">
+    <h2>Active Loans</h2>
+    {% if active_issues %}
+    <table class="data-table">
+        <thead>
+            <tr>
+                <th>Book</th>
+                <th>Student</th>
+                <th>Issued</th>
+                <th>Due</th>
+                <th>Status</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for r in active_issues %}
+            <tr>
+                <td>{{ r.book.title }}</td>
+                <td>{{ r.student.full_name }}</td>
+                <td>{{ r.issue_date }}</td>
+                <td>{{ r.due_date }}</td>
+                <td>
+                    {% if r.is_overdue %}
+                        <span class="badge badge-danger">Overdue</span>
+                    {% else %}
+                        <span class="badge badge-info">Issued</span>
+                    {% endif %}
+                </td>
+                <td>
+                    <form method="POST" action="{{ url_for('return_book', record_id=r.id) }}">
+                        <button type="submit" class="btn btn-sm btn-outline">Mark Returned</button>
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <p class="empty-state">No books are currently on loan.</p>
+    {% endif %}
+</section>
+{% endblock %}

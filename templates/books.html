@@ -1,0 +1,64 @@
+{% extends 'base.html' %}
+{% block title %}Book Catalog{% endblock %}
+{% block content %}
+<div class="page-header-row">
+    <div>
+        <h1 class="page-title">Book Catalog</h1>
+        <p class="page-subtitle">{{ books|length }} title(s) found</p>
+    </div>
+    {% if current_user.role in ['admin', 'librarian'] %}
+    <a href="{{ url_for('add_book') }}" class="btn btn-primary">+ Add Book</a>
+    {% endif %}
+</div>
+
+<form method="GET" action="{{ url_for('books') }}" class="search-form">
+    <input type="text" name="q" placeholder="Search by title, author, or ISBN..." value="{{ query }}">
+    <button type="submit" class="btn btn-secondary">Search</button>
+    {% if query %}
+        <a href="{{ url_for('books') }}" class="btn btn-outline">Clear</a>
+    {% endif %}
+</form>
+
+{% if books %}
+<table class="data-table">
+    <thead>
+        <tr>
+            <th>Title</th>
+            <th>Author</th>
+            <th>Category</th>
+            <th>ISBN</th>
+            <th>Available</th>
+            {% if current_user.role in ['admin', 'librarian'] %}<th></th>{% endif %}
+        </tr>
+    </thead>
+    <tbody>
+        {% for book in books %}
+        <tr>
+            <td>{{ book.title }}</td>
+            <td>{{ book.author }}</td>
+            <td>{{ book.category or '—' }}</td>
+            <td>{{ book.isbn or '—' }}</td>
+            <td>
+                {% if book.available_copies > 0 %}
+                    <span class="badge badge-success">{{ book.available_copies }} / {{ book.quantity }}</span>
+                {% else %}
+                    <span class="badge badge-danger">0 / {{ book.quantity }}</span>
+                {% endif %}
+            </td>
+            {% if current_user.role in ['admin', 'librarian'] %}
+            <td class="actions-cell">
+                <a href="{{ url_for('edit_book', book_id=book.id) }}" class="btn btn-sm btn-outline">Edit</a>
+                <form method="POST" action="{{ url_for('delete_book', book_id=book.id) }}"
+                      onsubmit="return confirm('Delete this book from the catalog?');" class="inline-form">
+                    <button type="submit" class="btn btn-sm btn-danger">Delete</button>
+                </form>
+            </td>
+            {% endif %}
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% else %}
+<p class="empty-state">No books found{% if query %} for "{{ query }}"{% endif %}.</p>
+{% endif %}
+{% endblock %}

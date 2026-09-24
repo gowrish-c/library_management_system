@@ -1,0 +1,62 @@
+{% extends 'base.html' %}
+{% block title %}Student Dashboard{% endblock %}
+{% block content %}
+<h1 class="page-title">My Dashboard</h1>
+<p class="page-subtitle">Welcome back, {{ current_user.full_name }}</p>
+
+<div class="stats-grid">
+    <div class="stat-card">
+        <span class="stat-value">{{ my_issues|length }}</span>
+        <span class="stat-label">Books Currently Borrowed</span>
+    </div>
+    <div class="stat-card">
+        <span class="stat-value">{{ history_count }}</span>
+        <span class="stat-label">Total Loans (All Time)</span>
+    </div>
+    <div class="stat-card">
+        <span class="stat-value">{{ total_books }}</span>
+        <span class="stat-label">Titles in Catalog</span>
+    </div>
+</div>
+
+<div class="quick-links">
+    <a href="{{ url_for('books') }}" class="btn btn-primary">Browse Catalog</a>
+    <a href="{{ url_for('my_books') }}" class="btn btn-secondary">View My Books</a>
+</div>
+
+<section class="panel">
+    <h2>Currently Borrowed</h2>
+    {% if my_issues %}
+    <table class="data-table">
+        <thead>
+            <tr>
+                <th>Book</th>
+                <th>Author</th>
+                <th>Issued</th>
+                <th>Due</th>
+                <th>Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for r in my_issues %}
+            <tr>
+                <td>{{ r.book.title }}</td>
+                <td>{{ r.book.author }}</td>
+                <td>{{ r.issue_date }}</td>
+                <td>{{ r.due_date }}</td>
+                <td>
+                    {% if r.is_overdue %}
+                        <span class="badge badge-danger">Overdue</span>
+                    {% else %}
+                        <span class="badge badge-info">On Time</span>
+                    {% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <p class="empty-state">You don't have any books checked out right now.</p>
+    {% endif %}
+</section>
+{% endblock %}

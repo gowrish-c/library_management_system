@@ -1,0 +1,69 @@
+{% extends 'base.html' %}
+{% block title %}My Books{% endblock %}
+{% block content %}
+<h1 class="page-title">My Books</h1>
+
+<section class="panel">
+    <h2>Currently Borrowed</h2>
+    {% if active %}
+    <table class="data-table">
+        <thead>
+            <tr>
+                <th>Title</th>
+                <th>Author</th>
+                <th>Issued</th>
+                <th>Due</th>
+                <th>Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for r in active %}
+            <tr>
+                <td>{{ r.book.title }}</td>
+                <td>{{ r.book.author }}</td>
+                <td>{{ r.issue_date }}</td>
+                <td>{{ r.due_date }}</td>
+                <td>
+                    {% if r.is_overdue %}
+                        <span class="badge badge-danger">Overdue</span>
+                    {% else %}
+                        <span class="badge badge-info">On Time</span>
+                    {% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <p class="empty-state">You don't have any books checked out right now.</p>
+    {% endif %}
+</section>
+
+<section class="panel">
+    <h2>Loan History</h2>
+    {% if history %}
+    <table class="data-table">
+        <thead>
+            <tr>
+                <th>Title</th>
+                <th>Author</th>
+                <th>Issued</th>
+                <th>Returned</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for r in history %}
+            <tr>
+                <td>{{ r.book.title }}</td>
+                <td>{{ r.book.author }}</td>
+                <td>{{ r.issue_date }}</td>
+                <td>{{ r.return_date }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <p class="empty-state">No past loans yet.</p>
+    {% endif %}
+</section>
+{% endblock %}
